@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "+beZXe+ACh8=",
+  "success": true,
+  "projectFilePath": "/Users/sarwarfoyez/Desktop/Raylib/RaylibTest/RaylibTest.csproj",
+  "expectedPackageFiles": [
+    "/Users/sarwarfoyez/.nuget/packages/raylib-cs/7.0.1/raylib-cs.7.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
