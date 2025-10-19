@@ -14,8 +14,8 @@ class RotatingCube
         Raylib.SetTargetFPS(60);
 
         //define 2D points 
-        int sideLength = 200;
-        float d = 10f; //distance from camera (origin)
+        int sideLength = 75;
+        float d = 5f; //distance from camera (origin)
 
         Vector3[] basePoints =
         {
@@ -25,32 +25,47 @@ class RotatingCube
 
         int verticeCount = 8;
 
+        bool rotateXAxis = false;
+        bool rotateYAxis = true;
+        bool rotateZAxis = false;
         while (!Raylib.WindowShouldClose())
         {
             //time
             double time = Raylib.GetTime();
             double radians = time; //one radian of rotation per second
-            double cos = Math.Cos(radians);
-            double sin = Math.Sin(radians);
 
-            //rotation on the y-axis
             //transformed points using rotations 
             Vector3[] transformedPoints = new Vector3[verticeCount];
             for (int i = 0; i < verticeCount; i++)
             {
-                float x = basePoints[i].X;
-                float y = basePoints[i].Y;
-                float z = basePoints[i].Z;
+                var newPoint = new Vector3();
 
-                //rotating about the y-axis
-                // float x_1 = (float)(cos * x + sin * z);
-                // float z_1 = (float)(-sin * x + cos * z);
+                if (rotateXAxis)
+                {
+                    //rotation about the x-axis 
+                    Raylib.DrawText("Rotating about the X-Axis", 0, 0, 40, Color.Black);
+                    newPoint = Matrix.Mulitply(MatrixRotation.X(time), basePoints[i]);
+                }
 
-                //rotating about the x-axis then the y-axis
-                float x_1 = (float)(x * cos + y * sin * sin + z * sin * cos);
-                float y_1 = (float)(y * cos + z * -sin);
-                float z_1 = (float)(x * -sin + cos * sin * y + cos * cos * z);
-                transformedPoints[i] = new(x_1, y_1, z_1);
+                else if (rotateYAxis)
+                {
+                    // rotation about the y-axis
+                    Raylib.DrawText("Rotating about the Y-Axis", 0, 0, 40, Color.Black);
+                    newPoint = Matrix.Mulitply(MatrixRotation.Y(time), basePoints[i]);
+                }
+
+                else if (rotateZAxis)
+                {
+                    //rotaiton about the z-axis 
+                    Raylib.DrawText("Rotating about the Z-Axis", 0, 0, 40, Color.Black);
+                    newPoint = Matrix.Mulitply(MatrixRotation.Z(time), basePoints[i]);
+                }
+
+                // rotating about the x-axis then the y-axis
+                // Raylib.DrawText("Rotating about the X-Axis, then the Y-axis", 0, 0, 40, Color.Black);
+                // var XY = Matrix.Multiply(MatrixRotation.X(time), MatrixRotation.Y(time)); //arguments m1, m2, multiplication  m2 then m1 
+                // var newPoint = Matrix.Mulitply(XY, basePoints[i]);
+                transformedPoints[i] = newPoint;
             }
 
             //project onto the 2D screen based off of z-depth
