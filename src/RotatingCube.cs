@@ -61,6 +61,9 @@ class RotatingCube
                     newPoint = Matrix.Mulitply(MatrixRotation.Z(time), basePoints[i]);
                 }
 
+                newPoint = MatrixTranslation.X(newPoint, 0);
+                newPoint = MatrixTranslation.Y(newPoint, 0);
+                newPoint = MatrixTranslation.Z(newPoint, 3);
                 // rotating about the x-axis then the y-axis
                 // Raylib.DrawText("Rotating about the X-Axis, then the Y-axis", 0, 0, 40, Color.Black);
                 // var XY = Matrix.Multiply(MatrixRotation.X(time), MatrixRotation.Y(time)); //arguments m1, m2, multiplication  m2 then m1 
@@ -104,7 +107,8 @@ class RotatingCube
                     var b = projectedPoint[j];
                     Vector2 startPoint = new(a.X, a.Y);
                     Vector2 endPoint = new(b.X, b.Y);
-                    Raylib.DrawLineEx(startPoint, endPoint, thickness, color);
+                    //Raylib.DrawLineEx(startPoint, endPoint, thickness, color);
+                    DrawLine.DrawLineC(startPoint, endPoint, Color.Black);
                 }
             }
 

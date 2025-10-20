@@ -72,3 +72,12 @@ public class MatrixRotation
         });
     }
 }
+
+public class MatrixTranslation
+{
+    public static Vector3 Translate(Vector3 point, float unitX, float unitY, float unitZ) 
+        { return new Vector3(point.X += unitX, point.Y += unitY, point.Z += unitZ);  }
+    public static Vector3 X(Vector3 point, float units) { return new Vector3(point.X += units, point.Y, point.Z); }
+    public static Vector3 Y(Vector3 point, float units) { return new Vector3(point.X, point.Y += units, point.Z); }
+    public static Vector3 Z(Vector3 point, float units) { return new Vector3(point.X, point.Y, point.Z += units); }
+}
