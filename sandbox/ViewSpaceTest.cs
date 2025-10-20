@@ -15,7 +15,7 @@ public static class ViewSpaceTest
 
         //define 2D points 
         int sideLength = 75;
-        float d = 5f; //distance from camera (origin)
+        //float d = 5f; //distance from camera (origin)
         Camera2D cam = new Camera2D(new(2, 2)); //position is at (2,2)
 
         Vector2[] basePoints =
