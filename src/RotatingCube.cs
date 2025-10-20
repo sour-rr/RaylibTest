@@ -28,13 +28,36 @@ class RotatingCube
         bool rotateXAxis = false;
         bool rotateYAxis = true;
         bool rotateZAxis = false;
+
+        Camera cam = new Camera(new(2, 2, 2));
         while (!Raylib.WindowShouldClose())
         {
             //time
+            int fpsCount = Raylib.GetFPS();
+            Raylib.DrawText($"FPS: {fpsCount}", 800, 0, 40, Color.Black);
+
             double time = Raylib.GetTime();
+            double dt = Raylib.GetFrameTime();
+            float moveSpeed = 10;
+            float rotateSpeed = 5;
             double radians = time; //one radian of rotation per second
 
-            //transformed points using rotations 
+            //Input - Movement 
+            if (Raylib.IsKeyDown(KeyboardKey.W)) cam.Move(new(0,0, (float)(moveSpeed * dt))); //move forwards (increase z)
+            if (Raylib.IsKeyDown(KeyboardKey.S)) cam.Move(new(0,0, (float)(-moveSpeed * dt))); //move backwards (decrease z)
+            if (Raylib.IsKeyDown(KeyboardKey.D)) cam.Move(new((float)(moveSpeed * dt), 0, 0)); //move right
+            if (Raylib.IsKeyDown(KeyboardKey.A)) cam.Move(new((float)(-moveSpeed * dt), 0, 0)); //move left
+            if (Raylib.IsKeyDown(KeyboardKey.Space)) cam.Move(new(0, (float)(-moveSpeed * dt), 0)); //move cam up, so move world down
+            if (Raylib.IsKeyDown(KeyboardKey.LeftShift)) cam.Move(new(0, (float)(moveSpeed * dt), 0)); //move cam down, so move world up
+
+            //Input - Rotation 
+            if (Raylib.IsKeyDown(KeyboardKey.Right)) cam.RotateX((float)(rotateSpeed * dt));
+            if (Raylib.IsKeyDown(KeyboardKey.Left)) cam.RotateX((float)(-rotateSpeed * dt));
+            if (Raylib.IsKeyDown(KeyboardKey.Up)) cam.RotateY((float)(rotateSpeed * dt));
+            if (Raylib.IsKeyDown(KeyboardKey.Down)) cam.RotateY((float)(-rotateSpeed * dt));
+
+            //transformed points using rotations in model space (so objects own local origin) 
+            //Model Space -> World Space
             Vector3[] transformedPoints = new Vector3[verticeCount];
             for (int i = 0; i < verticeCount; i++)
             {
@@ -63,7 +86,7 @@ class RotatingCube
 
                 newPoint = MatrixTranslation.X(newPoint, 0);
                 newPoint = MatrixTranslation.Y(newPoint, 0);
-                newPoint = MatrixTranslation.Z(newPoint, 3);
+                newPoint = MatrixTranslation.Z(newPoint, 0);
                 // rotating about the x-axis then the y-axis
                 // Raylib.DrawText("Rotating about the X-Axis, then the Y-axis", 0, 0, 40, Color.Black);
                 // var XY = Matrix.Multiply(MatrixRotation.X(time), MatrixRotation.Y(time)); //arguments m1, m2, multiplication  m2 then m1 
@@ -71,13 +94,33 @@ class RotatingCube
                 transformedPoints[i] = newPoint;
             }
 
-            //project onto the 2D screen based off of z-depth
-            Vector2[] projectedPoint = new Vector2[verticeCount];
+            //model space into view space (how does that position and transformation look to the camera) 
+            //World Space -> View Space
+            Vector3[] viewPoints = new Vector3[verticeCount];
             for (int i = 0; i < verticeCount; i++)
             {
                 float x = transformedPoints[i].X;
                 float y = transformedPoints[i].Y;
                 float z = transformedPoints[i].Z;
+                //translation of world space points making the camera its origin now and moving relative to the camera
+                viewPoints[i] = new(x -= cam.Position.X, y -= cam.Position.Y, z -= cam.Position.Z);
+
+                //rotate relative to the camera
+                //rotate around y-axis
+                viewPoints[i] = Matrix.Mulitply(MatrixRotation.Y(-cam.Yaw), viewPoints[i]);
+                //rotate around the x-axis
+                viewPoints[i] = Matrix.Mulitply(MatrixRotation.X(-cam.Pitch), viewPoints[i]);
+
+            }
+
+            //project onto the 2D screen based off of z-depth
+            //View Space -> Screen Space
+            Vector2[] projectedPoint = new Vector2[verticeCount];
+            for (int i = 0; i < verticeCount; i++)
+            {
+                float x = viewPoints[i].X;
+                float y = viewPoints[i].Y;
+                float z = viewPoints[i].Z;
 
                 float x_1 = (d / (z + d)) * x;
                 float y_1 = (d / (z + d)) * y;
@@ -117,4 +160,23 @@ class RotatingCube
 
         Raylib.CloseWindow();
     }
-}   
+}
+
+public class Camera
+{
+    private Vector3 position;
+    private float pitch = 0; //x-axis of rotation
+    private float yaw = 0; //y-axis of rotation
+    public Vector3 Position => position;
+    public float Pitch => pitch;
+    public float Yaw => yaw;
+
+    public Camera(Vector3 pos)
+    {
+        this.position = pos;
+    }
+
+    public void Move(Vector3 translate) => this.position += translate;
+    public void RotateX(float units) => this.pitch += units;
+    public void RotateY(float units) => this.yaw += units;
+}

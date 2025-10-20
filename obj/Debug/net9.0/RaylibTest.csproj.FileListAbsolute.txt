@@ -20,3 +20,4 @@
 /Users/sarwarfoyez/Desktop/Raylib/RaylibTest/obj/Debug/net9.0/RaylibTest.pdb
 /Users/sarwarfoyez/Desktop/Raylib/RaylibTest/obj/Debug/net9.0/RaylibTest.genruntimeconfig.cache
 /Users/sarwarfoyez/Desktop/Raylib/RaylibTest/obj/Debug/net9.0/ref/RaylibTest.dll
+/Users/sarwarfoyez/Desktop/Raylib/RaylibTest/obj/Debug/net9.0/RaylibTest.sourcelink.json
