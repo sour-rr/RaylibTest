@@ -19,11 +19,19 @@ class RotatingCube
 
         Vector3[] basePoints =
         {
-            new(-1, -1, -1), new(1, -1, -1), new(1, 1, -1), new(-1, 1, -1),
-            new(-1, -1,  1), new(1, -1,  1), new(1, 1,  1), new(-1, 1,  1)
+            new(1, 1, 1), new(1, 1, -1), new(-1, 1, -1), new(-1, 1, 1), //top
+            new(1, -1,  1), new(1, -1,  -1), new(-1, -1,  -1), new(-1, -1, 1) //bottom
+        };
+
+        int[,] edges =
+        {
+            {0,1}, {1,2}, {2,3}, {3,0}, //top edges
+            {4,5}, {5,6}, {6,7}, {7,4}, //bottom edges
+            {0,4}, {1,5}, {2,6}, {3,7} //side eges
         };
 
         int verticeCount = 8;
+        int edgeCount = 12;
 
         bool rotateXAxis = false;
         bool rotateYAxis = true;
@@ -141,18 +149,11 @@ class RotatingCube
             }
 
             //draw the lines connecting them together
-            for (int i = 0; i < verticeCount; i++)
+            for(int i = 0; i < edgeCount; i++)
             {
-                var a = projectedPoint[i];
-                for (int j = 0; j < verticeCount; j++)
-                {
-                    if (i == j) continue;
-                    var b = projectedPoint[j];
-                    Vector2 startPoint = new(a.X, a.Y);
-                    Vector2 endPoint = new(b.X, b.Y);
-                    //Raylib.DrawLineEx(startPoint, endPoint, thickness, color);
-                    DrawLine.DrawLineC(startPoint, endPoint, Color.Black);
-                }
+                Vector2 startPoint = projectedPoint[edges[i, 0]]; // edges[row, element]
+                Vector2 endPoint = projectedPoint[edges[i, 1]];
+                DrawLine.DrawLineC(startPoint, endPoint, Color.Black);
             }
 
             Raylib.EndDrawing();

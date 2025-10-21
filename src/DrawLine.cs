@@ -18,10 +18,22 @@ public class DrawLine
         bool isVertical = x2 - x1 == 0;
         float m = isVertical ? 0 : (y2 - y1) / (x2 - x1);
 
-        for(int i = (int)x1; i <= x2; i++)
+        int startY = Math.Min((int)y1, (int)y2);
+        int endY = Math.Max((int)y1, (int)y2);
+        if (isVertical) //draw the vertical lines (same x-coordinates)
+        {
+            for (int i = startY; i <= endY; i++)
+            {
+                Raylib.DrawCircle((int)x1, i, 1, color);
+            }
+            return;
+        }
+
+        int startX = Math.Min((int)x1, (int)x2);
+        int endX = Math.Max((int)x1, (int)x2);
+        for(int i = startX; i <= endX; i++)
         {
             int y = (int)(m * (i - x1) + y1);
-            //if (isVertical) Raylib.DrawCircle((int)x1, (int)x1, 1, color);
             Raylib.DrawCircle(i, y, 1, color);
         }
     }
