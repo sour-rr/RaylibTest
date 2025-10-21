@@ -17,21 +17,34 @@ class RotatingCube
         int sideLength = 75;
         float d = 2f; //distance from camera (origin)
 
-        Vector3[] basePoints =
-        {
-            new(1, 1, 1), new(1, 1, -1), new(-1, 1, -1), new(-1, 1, 1), //top
-            new(1, -1,  1), new(1, -1,  -1), new(-1, -1,  -1), new(-1, -1, 1) //bottom
-        };
-
-        int[,] edges =
-        {
-            {0,1}, {1,2}, {2,3}, {3,0}, //top edges
-            {4,5}, {5,6}, {6,7}, {7,4}, //bottom edges
-            {0,4}, {1,5}, {2,6}, {3,7} //side eges
-        };
-
         int verticeCount = 8;
-        int edgeCount = 12;
+        Mesh cube = new Mesh("Cube", verticeCount, 12);
+        cube.AddVertex(new(1, 1, 1)); //0
+        cube.AddVertex(new(1, 1, -1)); //1
+        cube.AddVertex(new(-1, 1, -1)); //2
+        cube.AddVertex(new(-1, 1, 1)); //3
+        cube.AddVertex(new(1, -1, 1)); //4
+        cube.AddVertex(new(1, -1, -1)); //5
+        cube.AddVertex(new(-1, -1, -1)); //6
+        cube.AddVertex(new(-1, -1, 1)); //7
+
+        cube.AddFace(0, 1, 2); //top faces
+        cube.AddFace(2, 3, 0);
+
+        cube.AddFace(4, 5, 6); //bottom faces
+        cube.AddFace(6, 7, 4);
+
+        cube.AddFace(0, 1, 5); //side face 1 
+        cube.AddFace(5, 4, 0);
+
+        cube.AddFace(3, 7, 4); //side face 2
+        cube.AddFace(4, 0, 3);
+
+        cube.AddFace(1, 5, 6); //side face 3
+        cube.AddFace(6, 2, 1);
+
+        cube.AddFace(2, 6, 7); //side face 4
+        cube.AddFace(7, 3, 2); 
 
         bool rotateXAxis = false;
         bool rotateYAxis = true;
@@ -69,36 +82,34 @@ class RotatingCube
             Vector3[] transformedPoints = new Vector3[verticeCount];
             for (int i = 0; i < verticeCount; i++)
             {
+                var vertex = cube.Vertices[i];
                 var newPoint = new Vector3();
 
                 if (rotateXAxis)
                 {
                     //rotation about the x-axis 
                     Raylib.DrawText("Rotating about the X-Axis", 0, 0, 40, Color.Black);
-                    newPoint = Matrix.Mulitply(MatrixRotation.X(time), basePoints[i]);
+                    newPoint = Matrix.Mulitply(MatrixRotation.X(radians), vertex);
                 }
 
                 else if (rotateYAxis)
                 {
                     // rotation about the y-axis
                     Raylib.DrawText("Rotating about the Y-Axis", 0, 0, 40, Color.Black);
-                    newPoint = Matrix.Mulitply(MatrixRotation.Y(time), basePoints[i]);
+                    newPoint = Matrix.Mulitply(MatrixRotation.Y(radians), vertex);
                 }
 
                 else if (rotateZAxis)
                 {
                     //rotaiton about the z-axis 
                     Raylib.DrawText("Rotating about the Z-Axis", 0, 0, 40, Color.Black);
-                    newPoint = Matrix.Mulitply(MatrixRotation.Z(time), basePoints[i]);
+                    newPoint = Matrix.Mulitply(MatrixRotation.Z(radians), vertex);
                 }
 
                 newPoint = MatrixTranslation.X(newPoint, 0);
                 newPoint = MatrixTranslation.Y(newPoint, 0);
                 newPoint = MatrixTranslation.Z(newPoint, 0);
-                // rotating about the x-axis then the y-axis
-                // Raylib.DrawText("Rotating about the X-Axis, then the Y-axis", 0, 0, 40, Color.Black);
-                // var XY = Matrix.Multiply(MatrixRotation.X(time), MatrixRotation.Y(time)); //arguments m1, m2, multiplication  m2 then m1 
-                // var newPoint = Matrix.Mulitply(XY, basePoints[i]);
+
                 transformedPoints[i] = newPoint;
             }
 
@@ -153,13 +164,15 @@ class RotatingCube
             }
 
             //draw the lines connecting them together
-            for (int i = 0; i < edgeCount; i++)
+            for(int i = 0, n = cube.Faces.Length; i < n; i++)
             {
-                Vector2 startPoint = projectedPoint[edges[i, 0]]; // edges[row, element]
-                Vector2 endPoint = projectedPoint[edges[i, 1]];
-                //check for invalid point 
-                if (float.IsNaN(startPoint.X) || float.IsNaN(endPoint.X)) continue;
-                DrawLine.DrawLineC(startPoint, endPoint, Color.Black);
+                var vertexA = projectedPoint[cube.Faces[i].A];
+                var vertexB = projectedPoint[cube.Faces[i].B];
+                var vertexC = projectedPoint[cube.Faces[i].C];
+
+                DrawLine.DrawLineC(vertexA, vertexB, Color.Black);
+                DrawLine.DrawLineC(vertexB, vertexC, Color.Black);
+                DrawLine.DrawLineC(vertexC, vertexA, Color.Black);
             }
 
             Raylib.EndDrawing();
