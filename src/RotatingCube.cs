@@ -15,7 +15,7 @@ class RotatingCube
 
         //define 2D points 
         int sideLength = 75;
-        float d = 5f; //distance from camera (origin)
+        float d = 2f; //distance from camera (origin)
 
         Vector3[] basePoints =
         {
@@ -51,8 +51,8 @@ class RotatingCube
             double radians = time; //one radian of rotation per second
 
             //Input - Movement 
-            if (Raylib.IsKeyDown(KeyboardKey.W)) cam.Move(new(0,0, (float)(moveSpeed * dt))); //move forwards (increase z)
-            if (Raylib.IsKeyDown(KeyboardKey.S)) cam.Move(new(0,0, (float)(-moveSpeed * dt))); //move backwards (decrease z)
+            if (Raylib.IsKeyDown(KeyboardKey.W)) cam.Move(new(0, 0, (float)(moveSpeed * dt))); //move forwards (increase z)
+            if (Raylib.IsKeyDown(KeyboardKey.S)) cam.Move(new(0, 0, (float)(-moveSpeed * dt))); //move backwards (decrease z)
             if (Raylib.IsKeyDown(KeyboardKey.D)) cam.Move(new((float)(moveSpeed * dt), 0, 0)); //move right
             if (Raylib.IsKeyDown(KeyboardKey.A)) cam.Move(new((float)(-moveSpeed * dt), 0, 0)); //move left
             if (Raylib.IsKeyDown(KeyboardKey.Space)) cam.Move(new(0, (float)(-moveSpeed * dt), 0)); //move cam up, so move world down
@@ -130,6 +130,10 @@ class RotatingCube
                 float y = viewPoints[i].Y;
                 float z = viewPoints[i].Z;
 
+                if (z <= -d) {
+                    projectedPoint[i] = new(float.NaN, float.NaN);
+                    continue;
+                }
                 float x_1 = (d / (z + d)) * x;
                 float y_1 = (d / (z + d)) * y;
                 projectedPoint[i] = new(centre.X + (x_1 * sideLength), centre.Y + (y_1 * sideLength));
@@ -149,10 +153,12 @@ class RotatingCube
             }
 
             //draw the lines connecting them together
-            for(int i = 0; i < edgeCount; i++)
+            for (int i = 0; i < edgeCount; i++)
             {
                 Vector2 startPoint = projectedPoint[edges[i, 0]]; // edges[row, element]
                 Vector2 endPoint = projectedPoint[edges[i, 1]];
+                //check for invalid point 
+                if (float.IsNaN(startPoint.X) || float.IsNaN(endPoint.X)) continue;
                 DrawLine.DrawLineC(startPoint, endPoint, Color.Black);
             }
 
