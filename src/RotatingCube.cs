@@ -125,11 +125,10 @@ class RotatingCube
                 viewPoints[i] = new(x -= cam.Position.X, y -= cam.Position.Y, z -= cam.Position.Z);
 
                 //rotate relative to the camera
-                //rotate around y-axis
-                viewPoints[i] = Matrix.Mulitply(MatrixRotation.Y(-cam.Yaw), viewPoints[i]);
                 //rotate around the x-axis
-                viewPoints[i] = Matrix.Mulitply(MatrixRotation.X(-cam.Pitch), viewPoints[i]);
-
+                viewPoints[i] = Matrix.Mulitply(MatrixRotation.X(-cam.Yaw), viewPoints[i]);
+                //rotate around y-axis
+                viewPoints[i] = Matrix.Mulitply(MatrixRotation.Y(-cam.Pitch), viewPoints[i]);
             }
 
             //project onto the 2D screen based off of z-depth
@@ -153,14 +152,13 @@ class RotatingCube
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.White);
             Color color = Color.Red;
-            int thickness = 3;
 
             //draw the points
             for (int i = 0; i < verticeCount; i++)
             {
                 float x = projectedPoint[i].X;
                 float y = projectedPoint[i].Y;
-                Raylib.DrawCircle((int)x, (int)y, thickness, color);
+                Raylib.DrawPixel((int)x, (int)y, color);
             }
 
             //draw the lines connecting them together

@@ -38,7 +38,7 @@ public class DrawLine
             for (int i = startY; i <= endY; i++)
             {
                 int x = (int)(1 / m * (i - y1) + x1);
-                Raylib.DrawCircle(x, i, 1, color);
+                Raylib.DrawPixel(x, i, color);
             }
         }
         else
@@ -46,7 +46,7 @@ public class DrawLine
             for(int i = startX; i <= endX; i++)
             {
                 int y = (int)(m * (i - x1) + y1);
-                Raylib.DrawCircle(i, y, 1, color);
+                Raylib.DrawPixel(i, y, color);
             }  
         }
     }
