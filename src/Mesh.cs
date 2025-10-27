@@ -1,6 +1,8 @@
 using System;
+using System.Drawing;
 using System.Dynamic;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 
 public class Mesh
 {
@@ -42,9 +44,44 @@ public class Mesh
         }
         return false;
     }
+
+    //rotate the points by a specified axis, then translate them
+    public Vector3 WorldProjection(Vector3 vertex, AxisRotation axis, float radian, Vector3 translation)
+    {
+        switch (axis)
+        {
+            case AxisRotation.x:
+                vertex = Matrix.Mulitply(MatrixRotation.X(radian), vertex);
+                break;
+            case AxisRotation.y:
+                vertex = Matrix.Mulitply(MatrixRotation.Y(radian), vertex);
+                break;
+            case AxisRotation.z:
+                vertex = Matrix.Mulitply(MatrixRotation.Z(radian), vertex);
+                break;
+        }
+
+        vertex = MatrixTranslation.Translate(vertex, translation.X, translation.Y, translation.Z);
+        return vertex;
+    }
+
+    public Vector2 ProjectionMatrix(Vector3 vertex, float d, Vector2 centre, float sideLength)
+    {
+        float x = vertex.X;
+        float y = vertex.Y;
+        float z = vertex.Z;
+        if (z <= -d) {
+            return new(float.NaN, float.NaN);
+        }
+        float x_1 = (d / (z + d)) * x;
+        float y_1 = (d / (z + d)) * y;
+        vertex = new Vector3(centre.X + (x_1 * sideLength), centre.Y + (y_1 * sideLength), 0f);
+        return new(vertex.X, vertex.Y);
+    }
 }
 
-public struct Face {
+public struct Face
+{
     public int A { get; private set; }
     public int B { get; private set; }
     public int C { get; private set; }
@@ -54,4 +91,11 @@ public struct Face {
         this.B = b;
         this.C = c;
     }
+}
+
+public enum AxisRotation
+{
+    x,
+    y,
+    z
 }
