@@ -28,6 +28,7 @@ public class Camera
 
     public void Update(float time)
     {
+        Vector2 mousePos = Raylib.GetMouseDelta();
         //update the forwards relative to yaw and pitch 
         float x = MathF.Cos(pitch) * MathF.Sin(yaw);
         float y = MathF.Sin(pitch);

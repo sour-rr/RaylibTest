@@ -1,18 +1,16 @@
-using System;
-using System.Drawing;
-using System.Dynamic;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 
 public class Mesh
 {
     public string Name { get; private set; }
     public Vector3[] Vertices { get; private set; }
     public Face[] Faces { get; private set; }
+    public Vector3 WorldPosition { get; private set; }
 
-    public Mesh(string name, int verticeCount, int faceCount)
+    public Mesh(string name, int verticeCount, int faceCount, Vector3 pos)
     {
         this.Name = name;
+        this.WorldPosition = pos;
 
         this.Vertices = new Vector3[verticeCount];
         for (int i = 0; i < verticeCount; i++)
@@ -20,7 +18,7 @@ public class Mesh
 
         this.Faces = new Face[faceCount];
         for (int i = 0; i < faceCount; i++)
-            Faces[i] = new(-1,-1,-1);
+            Faces[i] = new(-1, -1, -1);
     }
 
     public bool AddVertex(Vector3 point)
@@ -70,13 +68,46 @@ public class Mesh
         float x = vertex.X;
         float y = vertex.Y;
         float z = vertex.Z;
-        if (z <= -d) {
+        if (z <= -d)
+        {
             return new(float.NaN, float.NaN);
         }
         float x_1 = (d / (z + d)) * x;
         float y_1 = (d / (z + d)) * y;
         vertex = new Vector3(centre.X + (x_1 * sideLength), centre.Y + (y_1 * sideLength), 0f);
         return new(vertex.X, vertex.Y);
+    }
+    public static Mesh CreateUnitCube(Vector3 position)
+    {
+        Mesh cube = new Mesh("Cube", 8, 12, position);
+        cube.AddVertex(new(1, 1, 1)); //0
+        cube.AddVertex(new(1, 1, -1)); //1
+        cube.AddVertex(new(-1, 1, -1)); //2
+        cube.AddVertex(new(-1, 1, 1)); //3
+        cube.AddVertex(new(1, -1, 1)); //4
+        cube.AddVertex(new(1, -1, -1)); //5
+        cube.AddVertex(new(-1, -1, -1)); //6
+        cube.AddVertex(new(-1, -1, 1)); //7
+
+        cube.AddFace(0, 1, 2); //top faces
+        cube.AddFace(2, 3, 0);
+
+        cube.AddFace(4, 5, 6); //bottom faces
+        cube.AddFace(6, 7, 4);
+
+        cube.AddFace(0, 1, 5); //side face 1 
+        cube.AddFace(5, 4, 0);
+
+        cube.AddFace(3, 7, 4); //side face 2
+        cube.AddFace(4, 0, 3);
+
+        cube.AddFace(1, 5, 6); //side face 3
+        cube.AddFace(6, 2, 1);
+
+        cube.AddFace(2, 6, 7); //side face 4
+        cube.AddFace(7, 3, 2);
+
+        return cube;
     }
 }
 
