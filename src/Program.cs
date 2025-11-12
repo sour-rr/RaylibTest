@@ -7,10 +7,10 @@ class Program
     const int width = 1000;
     const int height = 800;
     static Vector2 centre = new(width / 2, height / 2);
-    public static Camera cam = new Camera(new(2, 2, 2));
+    public static Camera cam = new Camera(new(0, 0, 0));
     //define 2D points 
     static int sideLength = 75; //75
-    static float d = 2f; //distance from camera (origin)
+    public static float d = 10f; //distance from camera (origin)
 
     static void Main()
     {
@@ -18,19 +18,8 @@ class Program
         Raylib.SetTargetFPS(60);
 
         //ecs
-        Object new_sphere = new Object();
-        Colour color = new Colour();
-        Sphere mesh1 = new Sphere("Sphere", new(0,0,0), 60, 60, 30);
-        mesh1.CreateSphere();
-        color.UpdateColour(Color.Blue);
-
-        new_sphere.AddComponent<Colour>(color);
-        new_sphere.AddComponent<Transform>(new Transform());
-        new_sphere.AddComponent<Mesh>(mesh1);
-
         List<Object> objects = new List<Object>();
-        objects.Add(new_sphere);
-
+        
         //Update loop
         while (!Raylib.WindowShouldClose())
         {
@@ -45,14 +34,13 @@ class Program
             double dt = Raylib.GetFrameTime(); //delta time
             cam.Update((float)dt);
 
-            //change colour test
-            if (Raylib.IsKeyPressed(KeyboardKey.I))
-                color.UpdateColour(new Color(0, 255, 0));
-            else if (Raylib.IsKeyPressed(KeyboardKey.O))
-                color.UpdateColour(Color.DarkPurple);
-
             double radians = time; //one radian of rotation per second            
 
+            if (Raylib.IsKeyPressed(KeyboardKey.C))
+            {
+                var prefab = Prefab.CreateObject<Sphere>(new("Sphere", new(0,0,0), 60, 60, 10));
+                objects.Add(prefab);    
+            }
             foreach (var obj in objects)
             {
                 obj.Update();
@@ -90,10 +78,10 @@ class Program
         {
             float x = projectedPoint[i].X;
             float y = projectedPoint[i].Y;
-            if (projectedPoint[i].X > width || projectedPoint[i].X < 0)
-                Console.WriteLine(projectedPoint[i]);
-            if(projectedPoint[i].Y > height || projectedPoint[i].Y < 0)
-                Console.WriteLine(projectedPoint[i]);
+            // if (projectedPoint[i].X > width || projectedPoint[i].X < 0)
+            //     Console.WriteLine(projectedPoint[i]);
+            // if(projectedPoint[i].Y > height || projectedPoint[i].Y < 0)
+            //     Console.WriteLine(projectedPoint[i]);
             
             Raylib.DrawPixel((int)x, (int)y, Color.Red);
         }

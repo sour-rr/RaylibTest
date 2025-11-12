@@ -49,7 +49,7 @@ public class Mesh : Component
     public  Mesh CreateUnitCube(Vector3 position)
     {
         Mesh cube = new Mesh("Cube", position);
-        Initialise(8, 6);
+        cube.Initialise(8, 12);
         cube.AddVertex(new(1, 1, 1)); //0
         cube.AddVertex(new(1, 1, -1)); //1
         cube.AddVertex(new(-1, 1, -1)); //2

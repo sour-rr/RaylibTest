@@ -13,6 +13,7 @@ public class Sphere : Mesh
         this.StepX = stepCountX;
         this.StepY = stepCountY;
         this.Radius = radius;
+        this.CreateSphere();
     }
 
     public void CreateSphere()

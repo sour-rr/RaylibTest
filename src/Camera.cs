@@ -66,12 +66,12 @@ public class Camera
         float x = vertex.X;
         float y = vertex.Y; 
         float z = vertex.Z;
-        if (z <= -d)
+        if (z <= 0)
         {
             return new(float.NaN, float.NaN);
         }
-        float x_1 = (d / (z + d)) * x;
-        float y_1 = (d / (z + d)) * y;
+        float x_1 = (d / (z)) * x;
+        float y_1 = (d / (z)) * y;
         vertex = new Vector3(centre.X + (x_1 * sideLength), centre.Y + (y_1 * sideLength), 0f);
         return new(vertex.X, vertex.Y);
     }
