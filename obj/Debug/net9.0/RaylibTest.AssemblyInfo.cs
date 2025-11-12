@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RaylibTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+38751c6e82da168bda6f12d93ea4a8254fdc7f94")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2357b0cf24fdf195e765c8e6eef73075ac4831dd")]
 [assembly: System.Reflection.AssemblyProductAttribute("RaylibTest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RaylibTest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
