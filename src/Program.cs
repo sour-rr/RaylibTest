@@ -16,26 +16,17 @@ class Program
     {
         Raylib.InitWindow(width, height, "Rotating Cube Window");
         Raylib.SetTargetFPS(60);
-
         List<Mesh> meshes = new List<Mesh>();
-        Mesh cube = Mesh.CreateUnitCube(new(5, 0, 0));
-        // Mesh cube1 = Mesh.CreateUnitCube(new(7, 0, 0));
-        // Mesh cube2 = Mesh.CreateUnitCube(new(9, 0, 0));
-        // Mesh cube3 = Mesh.CreateUnitCube(new(20, 0, 0));
-        // Mesh cube4 = Mesh.CreateUnitCube(new(25, 0, 0));
 
-        Sphere sphere = new Sphere("Sphere", 234, 0, new(0,0,0), 20, 15, 40);
+        Sphere sphere = new Sphere("Sphere", new(0,0,0), 10, 10, 30);
         sphere.CreateSphere();
 
-        meshes.Add(cube);
         meshes.Add(sphere);
-        // meshes.Add(cube1);
-        // meshes.Add(cube2);
-        // meshes.Add(cube3);
-        // meshes.Add(cube4);
-
         while (!Raylib.WindowShouldClose())
         {
+            Raylib.BeginDrawing();
+            Raylib.ClearBackground(Color.White);
+
             //time
             int fpsCount = Raylib.GetFPS();
             Raylib.DrawText($"FPS: {fpsCount}", 800, 0, 40, Color.Black);
@@ -43,16 +34,23 @@ class Program
             double time = Raylib.GetTime();
             double dt = Raylib.GetFrameTime();
             cam.Update((float)dt);
+            
+            if(Raylib.IsKeyPressed(KeyboardKey.Z))
+                sphere.RotateZAxis();
+            else if(Raylib.IsKeyPressed(KeyboardKey.Y))
+                sphere.RotateYAxis();
+            else if(Raylib.IsKeyPressed(KeyboardKey.X))
+                sphere.RotateXAxis();
+
             double radians = time; //one radian of rotation per second
 
             foreach (var mesh in meshes)
             {
                 Render(mesh, radians, mesh.WorldPosition);
             }
-            
+
             Raylib.EndDrawing();
         }
-
         Raylib.CloseWindow();
     }
     
@@ -63,7 +61,7 @@ class Program
         int verticeCount = mesh.Vertices.Length;
         Vector3[] transformedPoints = new Vector3[verticeCount];
         for (int i = 0; i < verticeCount; i++)
-            transformedPoints[i] = mesh.WorldProjection(mesh.Vertices[i], AxisRotation.x, (float)radians, pos);
+            transformedPoints[i] = cam.WorldProjection(mesh, i, (float)radians);
 
         // model space into view space (how does that position and transformation look to the camera) 
         // World Space -> View Space
@@ -75,23 +73,21 @@ class Program
         //View Space -> Screen Space
         Vector2[] projectedPoint = new Vector2[verticeCount];
         for (int i = 0; i < verticeCount; i++)
-            projectedPoint[i] = mesh.ProjectionMatrix(viewPoints[i], d, centre, sideLength);
+            projectedPoint[i] = cam.ProjectionMatrix(viewPoints[i], d, centre, sideLength);
 
-        Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.White);
-        Color color = Color.Red;
 
         //draw the points
         for (int i = 0; i < verticeCount; i++)
         {
             float x = projectedPoint[i].X;
             float y = projectedPoint[i].Y;
-            Raylib.DrawCircle((int)x, (int)y, 3f, color);
+            Raylib.DrawPixel((int)x, (int)y, Color.Red);
         }
             
         //draw the lines connecting them together
         for(int i = 0, n = mesh.Faces.Length; i < n; i++)
         {
+            //Console.WriteLine($"Faces: {mesh.Faces[i].A} {mesh.Faces[i].B} {mesh.Faces[i].C}");
             var vertexA = projectedPoint[mesh.Faces[i].A];
             var vertexB = projectedPoint[mesh.Faces[i].B];
             var vertexC = projectedPoint[mesh.Faces[i].C];
@@ -101,4 +97,4 @@ class Program
             DrawLine.DrawLineC(vertexC, vertexA, Color.Black);
         }
     }
-}
+}               

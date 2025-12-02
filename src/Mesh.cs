@@ -6,12 +6,16 @@ public class Mesh
     public Vector3[] Vertices { get; private set; }
     public Face[] Faces { get; private set; }
     public Vector3 WorldPosition { get; private set; }
+    public AxisRotation AxisRotation {get; private set;}
 
-    public Mesh(string name, int verticeCount, int faceCount, Vector3 pos)
+    public Mesh(string name, Vector3 pos)
     {
         this.Name = name;
         this.WorldPosition = pos;
+    }
 
+    public virtual void Initialise(int verticeCount, int faceCount)
+    {
         this.Vertices = new Vector3[verticeCount];
         for (int i = 0; i < verticeCount; i++)
             Vertices[i] = new(float.NaN, float.NaN, float.NaN);
@@ -43,43 +47,14 @@ public class Mesh
         return false;
     }
 
-    //rotate the points by a specified axis, then translate them
-    public Vector3 WorldProjection(Vector3 vertex, AxisRotation axis, float radian, Vector3 translation)
-    {
-        switch (axis)
-        {
-            case AxisRotation.x:
-                vertex = Matrix.Mulitply(MatrixRotation.X(radian), vertex);
-                break;
-            case AxisRotation.y:
-                vertex = Matrix.Mulitply(MatrixRotation.Y(radian), vertex);
-                break;
-            case AxisRotation.z:
-                vertex = Matrix.Mulitply(MatrixRotation.Z(radian), vertex);
-                break;
-        }
+    public void RotateXAxis() => AxisRotation = AxisRotation.x;
+    public void RotateYAxis() => AxisRotation = AxisRotation.y;
+    public void RotateZAxis() => AxisRotation = AxisRotation.z;
 
-        vertex = MatrixTranslation.Translate(vertex, translation.X, translation.Y, translation.Z);
-        return vertex;
-    }
-
-    public Vector2 ProjectionMatrix(Vector3 vertex, float d, Vector2 centre, float sideLength)
+    public  Mesh CreateUnitCube(Vector3 position)
     {
-        float x = vertex.X;
-        float y = vertex.Y;
-        float z = vertex.Z;
-        if (z <= -d)
-        {
-            return new(float.NaN, float.NaN);
-        }
-        float x_1 = (d / (z + d)) * x;
-        float y_1 = (d / (z + d)) * y;
-        vertex = new Vector3(centre.X + (x_1 * sideLength), centre.Y + (y_1 * sideLength), 0f);
-        return new(vertex.X, vertex.Y);
-    }
-    public static Mesh CreateUnitCube(Vector3 position)
-    {
-        Mesh cube = new Mesh("Cube", 8, 12, position);
+        Mesh cube = new Mesh("Cube", position);
+        Initialise(8, 6);
         cube.AddVertex(new(1, 1, 1)); //0
         cube.AddVertex(new(1, 1, -1)); //1
         cube.AddVertex(new(-1, 1, -1)); //2
