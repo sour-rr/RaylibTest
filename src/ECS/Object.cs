@@ -23,8 +23,15 @@ public class Object
     public T GetComponent<T>() where T : Component
     {
         //get the comp from the dict 
-        components.TryGetValue(typeof(T), out var component);
-        return component as T;
+        //components.TryGetValue(typeof(T), out var component);
+        foreach (var comp in components.Values)
+        {
+            if (comp is T tComp)
+            {
+                return tComp;
+            }
+        }
+        return default;
     }
 
     public void Update()
