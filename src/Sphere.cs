@@ -31,7 +31,7 @@ public class Sphere : Mesh
                 int x = (int)(Radius * Math.Sin(phi) * Math.Cos(theta));
                 int y = (int)(Radius * Math.Cos(phi));
                 int z = (int)(Radius * Math.Sin(phi) * Math.Sin(theta));
-                AddVertex(new(x, y, z));
+                AddVertex(new(x + this.WorldPosition.X, y + this.WorldPosition.Y, z + this.WorldPosition.Z));
                 //if (i == 0 || i == 180) break;
             }
 

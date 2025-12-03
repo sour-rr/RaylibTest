@@ -19,6 +19,8 @@ class Program
 
         //ecs
         List<Object> objects = new List<Object>();
+        var prefab_EX = Prefab.CreateObject<Sphere>(new("Sphere", new(60,0,10), 60, 60, 10));
+        objects.Add(prefab_EX); 
         
         //Update loop
         while (!Raylib.WindowShouldClose())
@@ -38,12 +40,14 @@ class Program
 
             if (Raylib.IsKeyPressed(KeyboardKey.C))
             {
-                var prefab = Prefab.CreateObject<Sphere>(new("Sphere", new(0,0,0), 60, 60, 10));
+                Console.WriteLine(cam.Position);
+                var prefab = Prefab.CreateObject<Sphere>(new("Sphere", cam.Position, 60, 60, 10));
                 objects.Add(prefab);    
             }
             foreach (var obj in objects)
             {
                 obj.Update();
+                obj.GetComponent<Transform>().RotateY((float)dt);
                 if (Raylib.IsKeyPressed(KeyboardKey.R))
                 {
                     obj.GetComponent<Transform>().RotateY(MathF.PI/4);

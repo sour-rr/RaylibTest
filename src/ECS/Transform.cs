@@ -57,12 +57,17 @@ public class Transform : Component
         for (int i = 0, n = mesh.Vertices.Length; i < n; i++) // iterate over each point of the mesh
         {
             Vector3 vertex = mesh.Vertices[i];
+            //Recentre the mesh to thw true origin apply all the transformations
+            vertex = ApplyTranslation(vertex, -mesh.WorldPosition);
             //scale the object accordingly to the scale vector 
             vertex = ApplyScale(vertex);
             //Rotate the object accordingly to the rotation vector 
             vertex = ApplyRotation(vertex);
             //Translate the object accordingly to the position vector
             vertex = ApplyTranslation(vertex);
+
+            //Set the mesh back to its world position
+            vertex = ApplyTranslation(vertex, mesh.WorldPosition);
             mesh.Vertices[i] = vertex;
         }
     }   
@@ -76,6 +81,7 @@ public class Transform : Component
         return vertex;    
     }
     private Vector3 ApplyTranslation(Vector3 vertex) => new Vector3(vertex.X + this.Position.X, vertex.Y + this.Position.Y, vertex.Z + this.Position.Z);
+    private Vector3 ApplyTranslation(Vector3 vertex, Vector3 translation) => new Vector3(vertex.X + translation.X, vertex.Y + translation.Y, vertex.Z + translation.Z);
 
 }
 
