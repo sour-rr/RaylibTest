@@ -23,12 +23,11 @@ public class Camera
     }
 
     public void Move(Vector3 translate) => this.position += translate;
-    public void RotateX(float units) { this.pitch += units; this.pitch = Math.Clamp(pitch, (float)-Math.PI * 89/180, (float)Math.PI * 89/180); Console.WriteLine($"Pitch: {this.pitch}"); }
+    public void RotateX(float units) { this.pitch += units; this.pitch = Math.Clamp(pitch, (float)-Math.PI * 89/180, (float)Math.PI * 89/180);}
     public void RotateY(float units) => this.yaw += units;
 
     public void Update(float time)
     {
-        Vector2 mousePos = Raylib.GetMouseDelta();
         //update the forwards relative to yaw and pitch 
         float x = MathF.Cos(pitch) * MathF.Sin(yaw);
         float y = MathF.Sin(pitch);
@@ -49,6 +48,13 @@ public class Camera
         if (Raylib.IsKeyDown(KeyboardKey.LeftShift)) position += worldUp * movementSpeed * time; //move cam down, so move world up
 
         //Input - Rotation 
+        Raylib.HideCursor();
+        var mouseDelta = Raylib.GetMouseDelta();
+        Raylib.SetMousePosition(500,400);
+
+        RotateX(-mouseDelta.Y * 0.01f);
+        RotateY(mouseDelta.X * 0.01f);
+
         if (Raylib.IsKeyDown(KeyboardKey.Right)) RotateY(rotateSpeed * time);
         if (Raylib.IsKeyDown(KeyboardKey.Left)) RotateY(-rotateSpeed * time);
         if (Raylib.IsKeyDown(KeyboardKey.Up)) RotateX(rotateSpeed * time);

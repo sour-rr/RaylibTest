@@ -35,19 +35,19 @@ class Program
         while (!Raylib.WindowShouldClose())
         {
             Raylib.BeginDrawing();
-            Raylib.ClearBackground(Color.White);
+            Raylib.ClearBackground(Color.Black);
 
             //time
             int fpsCount = Raylib.GetFPS();
             Raylib.DrawText($"FPS: {fpsCount}", 800, 0, 40, Color.Black);
 
-            double time = Raylib.GetTime();
-            double dt = Raylib.GetFrameTime();
+            double time = Raylib.GetTime(); //elapsed time since start
+            double dt = Raylib.GetFrameTime(); //delta time
             cam.Update((float)dt);
 
             //change colour test
             if (Raylib.IsKeyPressed(KeyboardKey.I))
-                color.UpdateColour(Color.Red);
+                color.UpdateColour(new Color(0, 255, 0));
             else if (Raylib.IsKeyPressed(KeyboardKey.O))
                 color.UpdateColour(Color.DarkPurple);
 
@@ -58,11 +58,13 @@ class Program
                 obj.Update();
                 if (Raylib.IsKeyPressed(KeyboardKey.R))
                 {
-                    obj.GetComponent<Transform>().RotateY(MathF.PI/2);
+                    obj.GetComponent<Transform>().RotateY(MathF.PI/4);
                 }
                 Render(obj.GetComponent<Mesh>(), radians);
             }
 
+            //Draw crosshair
+            DrawCrossHair();
             Raylib.EndDrawing();
         }
         Raylib.CloseWindow();
@@ -88,6 +90,11 @@ class Program
         {
             float x = projectedPoint[i].X;
             float y = projectedPoint[i].Y;
+            if (projectedPoint[i].X > width || projectedPoint[i].X < 0)
+                Console.WriteLine(projectedPoint[i]);
+            if(projectedPoint[i].Y > height || projectedPoint[i].Y < 0)
+                Console.WriteLine(projectedPoint[i]);
+            
             Raylib.DrawPixel((int)x, (int)y, Color.Red);
         }
             
@@ -102,5 +109,15 @@ class Program
             DrawLine.DrawLineC(vertexB, vertexC, mesh.Object.GetComponent<Colour>().Color);
             DrawLine.DrawLineC(vertexC, vertexA, mesh.Object.GetComponent<Colour>().Color);
         }
+    }
+
+    private static void DrawCrossHair()
+    {
+        //draw a white cross hair at the centre of the screen
+        int size = 10;
+        int thickness = 1;
+        //draw the vertical section
+        Raylib.DrawLineEx(new(centre.X - size,centre.Y), new(centre.X + size,centre.Y), thickness, Color.White);
+        Raylib.DrawLineEx(new(centre.X,centre.Y - size), new(centre.X,centre.Y + size), thickness, Color.White);
     }
 }               
