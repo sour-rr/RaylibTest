@@ -1,12 +1,11 @@
 using System.Numerics;
 
-public class Mesh
+public class Mesh : Component
 {
     public string Name { get; private set; }
     public Vector3[] Vertices { get; private set; }
     public Face[] Faces { get; private set; }
     public Vector3 WorldPosition { get; private set; }
-    public AxisRotation AxisRotation {get; private set;}
 
     public Mesh(string name, Vector3 pos)
     {
@@ -46,10 +45,6 @@ public class Mesh
         }
         return false;
     }
-
-    public void RotateXAxis() => AxisRotation = AxisRotation.x;
-    public void RotateYAxis() => AxisRotation = AxisRotation.y;
-    public void RotateZAxis() => AxisRotation = AxisRotation.z;
 
     public  Mesh CreateUnitCube(Vector3 position)
     {
@@ -97,11 +92,4 @@ public struct Face
         this.B = b;
         this.C = c;
     }
-}
-
-public enum AxisRotation
-{
-    x,
-    y,
-    z
 }

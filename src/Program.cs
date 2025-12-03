@@ -16,12 +16,22 @@ class Program
     {
         Raylib.InitWindow(width, height, "Rotating Cube Window");
         Raylib.SetTargetFPS(60);
-        List<Mesh> meshes = new List<Mesh>();
 
-        Sphere sphere = new Sphere("Sphere", new(0,0,0), 10, 10, 30);
-        sphere.CreateSphere();
+        //ecs
+        Object new_sphere = new Object();
+        Colour color = new Colour();
+        Sphere mesh1 = new Sphere("Sphere", new(0,0,0), 60, 60, 30);
+        mesh1.CreateSphere();
+        color.UpdateColour(Color.Blue);
 
-        meshes.Add(sphere);
+        new_sphere.AddComponent<Colour>(color);
+        new_sphere.AddComponent<Transform>(new Transform());
+        new_sphere.AddComponent<Mesh>(mesh1);
+
+        List<Object> objects = new List<Object>();
+        objects.Add(new_sphere);
+
+        //Update loop
         while (!Raylib.WindowShouldClose())
         {
             Raylib.BeginDrawing();
@@ -34,19 +44,23 @@ class Program
             double time = Raylib.GetTime();
             double dt = Raylib.GetFrameTime();
             cam.Update((float)dt);
-            
-            if(Raylib.IsKeyPressed(KeyboardKey.Z))
-                sphere.RotateZAxis();
-            else if(Raylib.IsKeyPressed(KeyboardKey.Y))
-                sphere.RotateYAxis();
-            else if(Raylib.IsKeyPressed(KeyboardKey.X))
-                sphere.RotateXAxis();
 
-            double radians = time; //one radian of rotation per second
+            //change colour test
+            if (Raylib.IsKeyPressed(KeyboardKey.I))
+                color.UpdateColour(Color.Red);
+            else if (Raylib.IsKeyPressed(KeyboardKey.O))
+                color.UpdateColour(Color.DarkPurple);
 
-            foreach (var mesh in meshes)
+            double radians = time; //one radian of rotation per second            
+
+            foreach (var obj in objects)
             {
-                Render(mesh, radians, mesh.WorldPosition);
+                obj.Update();
+                if (Raylib.IsKeyPressed(KeyboardKey.R))
+                {
+                    obj.GetComponent<Transform>().RotateY(MathF.PI/2);
+                }
+                Render(obj.GetComponent<Mesh>(), radians);
             }
 
             Raylib.EndDrawing();
@@ -54,20 +68,13 @@ class Program
         Raylib.CloseWindow();
     }
     
-    private static void Render(Mesh mesh, double radians, Vector3 pos)
+    private static void Render(Mesh mesh, double radians)
     {
-        //transformed points using rotations in model space (so objects own local origin) 
-        //Model Space -> World Space
         int verticeCount = mesh.Vertices.Length;
-        Vector3[] transformedPoints = new Vector3[verticeCount];
-        for (int i = 0; i < verticeCount; i++)
-            transformedPoints[i] = cam.WorldProjection(mesh, i, (float)radians);
-
-        // model space into view space (how does that position and transformation look to the camera) 
-        // World Space -> View Space
+ 
         Vector3[] viewPoints = new Vector3[verticeCount];
         for (int i = 0; i < verticeCount; i++)
-            viewPoints[i] = cam.ViewProjection(transformedPoints[i]);
+            viewPoints[i] = cam.ViewProjection(mesh.Vertices[i]);
 
         //project onto the 2D screen based off of z-depth
         //View Space -> Screen Space
@@ -87,14 +94,13 @@ class Program
         //draw the lines connecting them together
         for(int i = 0, n = mesh.Faces.Length; i < n; i++)
         {
-            //Console.WriteLine($"Faces: {mesh.Faces[i].A} {mesh.Faces[i].B} {mesh.Faces[i].C}");
             var vertexA = projectedPoint[mesh.Faces[i].A];
             var vertexB = projectedPoint[mesh.Faces[i].B];
             var vertexC = projectedPoint[mesh.Faces[i].C];
 
-            DrawLine.DrawLineC(vertexA, vertexB, Color.Black);
-            DrawLine.DrawLineC(vertexB, vertexC, Color.Black);
-            DrawLine.DrawLineC(vertexC, vertexA, Color.Black);
+            DrawLine.DrawLineC(vertexA, vertexB, mesh.Object.GetComponent<Colour>().Color);
+            DrawLine.DrawLineC(vertexB, vertexC, mesh.Object.GetComponent<Colour>().Color);
+            DrawLine.DrawLineC(vertexC, vertexA, mesh.Object.GetComponent<Colour>().Color);
         }
     }
 }               

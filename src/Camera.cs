@@ -55,32 +55,10 @@ public class Camera
         if (Raylib.IsKeyDown(KeyboardKey.Down)) RotateX(-rotateSpeed * time);
     }
 
-    //rotate the points by a specified axis, then translate them
-    public Vector3 WorldProjection(Mesh mesh, int index, float radian)
-    {
-        Vector3 vertex = mesh.Vertices[index];
-        Vector3 position = mesh.WorldPosition;
-        switch (mesh.AxisRotation)
-        {
-            case AxisRotation.x:
-                vertex = Matrix.Mulitply(MatrixRotation.X(radian), vertex);
-                break;
-            case AxisRotation.y:
-                vertex = Matrix.Mulitply(MatrixRotation.Y(radian), vertex);
-                break;
-            case AxisRotation.z:
-                vertex = Matrix.Mulitply(MatrixRotation.Z(radian), vertex);
-                break;
-        }
-
-        vertex = MatrixTranslation.Translate(vertex, position.X, position.Y, position.Z);
-        return vertex;
-    }
-
     public Vector2 ProjectionMatrix(Vector3 vertex, float d, Vector2 centre, float sideLength)
     {
         float x = vertex.X;
-        float y = vertex.Y;
+        float y = vertex.Y; 
         float z = vertex.Z;
         if (z <= -d)
         {
